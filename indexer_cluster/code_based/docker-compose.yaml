@@ -1,0 +1,90 @@
+version: '3'
+services:
+  manager:
+    image: centos:latest
+    ports:
+      - "8001:8000"
+    command: 
+      - bash
+      - -c
+      - |
+        cd /etc/yum.repos.d/ &&
+        sed -i 's/mirrorlist/#mirrorlist/g' CentOS-* &&
+        sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' CentOS-* &&
+        cd /opt &&
+        yum install wget -y && wget -O splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.1.2/linux/splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz" && tar -xvzf splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz &&
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start && /opt/splunk/bin/splunk login -auth admin:splunk1234
+        /opt/splunk/bin/splunk edit cluster-config -mode manager -replication_factor 3 -search_factor 2 -secret splunk1234 -cluster_label dockertest &&
+        /opt/splunk/bin/splunk restart
+    stop_grace_period: 25m
+
+  peer1:
+    image: centos:latest
+    ports:
+      - "8002:8000"
+    depends_on:
+      - manager
+    command: 
+      - bash
+      - -c
+      - |
+        cd /etc/yum.repos.d/ &&
+        sed -i 's/mirrorlist/#mirrorlist/g' CentOS-* &&
+        sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' CentOS-* &&
+        cd /opt &&
+        yum install wget -y && wget -O splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.1.2/linux/splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz" && tar -xvzf splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz &&
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start && /opt/splunk/bin/splunk login -auth admin:splunk1234
+        /opt/splunk/bin/splunk edit cluster-config -mode peer -manager_uri http://manager:8089 -replication_port 9887 -secret splunk1234 &&
+        /opt/splunk/bin/splunk restart
+    stop_grace_period: 25m
+
+  peer2:
+    image: centos:latest
+    ports:
+      - "8003:8000"
+    depends_on:
+      - manager
+      - peer1
+    command: 
+      - bash
+      - -c
+      - |
+        cd /etc/yum.repos.d/ &&
+        sed -i 's/mirrorlist/#mirrorlist/g' CentOS-* &&
+        sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' CentOS-* &&
+        cd /opt &&
+        yum install wget -y && wget -O splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.1.2/linux/splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz" && tar -xvzf splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz &&
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start && /opt/splunk/bin/splunk login -auth admin:splunk1234
+        /opt/splunk/bin/splunk edit cluster-config -mode peer -manager_uri http://manager:8089 -replication_port 9887 -secret splunk1234 &&
+        /opt/splunk/bin/splunk restart
+    stop_grace_period: 25m
+
+  peer3:
+    image: centos:latest
+    ports:
+      - "8004:8000"
+    depends_on:
+      - manager
+      - peer1
+      - peer2
+    command: 
+      - bash
+      - -c
+      - |
+        cd /etc/yum.repos.d/ &&
+        sed -i 's/mirrorlist/#mirrorlist/g' CentOS-* &&
+        sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' CentOS-* &&
+        cd /opt &&
+        yum install wget -y && wget -O splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.1.2/linux/splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz" && tar -xvzf splunk-9.1.2-b6b9c8185839-Linux-x86_64.tgz &&
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start && /opt/splunk/bin/splunk login -auth admin:splunk1234
+        /opt/splunk/bin/splunk edit cluster-config -mode peer -manager_uri http://manager:8089 -replication_port 9887 -secret splunk1234 &&
+        /opt/splunk/bin/splunk restart
+    stop_grace_period: 25m
