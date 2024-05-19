@@ -1,20 +1,16 @@
-
 # Use an official Node.js runtime as the base image
-FROM node:current-buster-slim
+FROM centos:latest
 
 # Set the working directory in the container
 WORKDIR /opt
 
-# Install necessary dependencies
-RUN apt-get update && \
-    apt-get install -y wget && \
-    rm -rf /var/lib/apt/lists/*
-
-# Download and extract Splunk
-RUN wget -O splunk-9.2.0.1-d8ae995bf219-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.2.0.1/linux/splunk-9.2.0.1-d8ae995bf219-Linux-x86_64.tgz" && \
-    tar -xvzf splunk-9.2.0.1-d8ae995bf219-Linux-x86_64.tgz && \
-    rm splunk-9.2.0.1-d8ae995bf219-Linux-x86_64.tgz
-
-# Expose necessary ports
+# Install dependencies
+RUN cd /etc/yum.repos.d/
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* 
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+RUN yum install wget -y
+RUN wget -O splunk-9.2.0.1-d8ae995bf219-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.2.0.1/linux/splunk-9.2.0.1-d8ae995bf219-Linux-x86_64.tgz"
+RUN tar -xvzf splunk-9.2.0.1-d8ae995bf219-Linux-x86_64.tgz
+RUN rm splunk-9.2.0.1-d8ae995bf219-Linux-x86_64.tgz
+# Expose port 3000 to the outside world
 EXPOSE 8000 8089
-
