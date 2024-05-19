@@ -1,4 +1,4 @@
-# Use an official Node.js runtime as the base image
+# Use an official Centos as the base image
 FROM centos:latest
 
 # Set the working directory in the container
