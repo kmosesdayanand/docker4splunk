@@ -1,0 +1,18 @@
+# Use an official Node.js runtime as the base image
+FROM centos:latest
+
+# Set the working directory in the container
+WORKDIR /opt
+
+# Install dependencies
+RUN cd /etc/yum.repos.d/
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* 
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+RUN yum install wget -y
+RUN wget -O splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/8.1.0/linux/splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz"
+RUN tar -xvzf splunk-8.1.0-f57c09e87251-Linux-x86_64.tgz
+
+# Expose port 3000 to the outside world
+EXPOSE 8000 8089
+
+
