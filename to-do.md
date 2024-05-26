@@ -1,5 +1,4 @@
 
-* ~~IDXC~~ 
 * MIDXC
 * SHC
 * Distributed setup
