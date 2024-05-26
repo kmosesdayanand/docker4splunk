@@ -11,6 +11,7 @@ RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|
 RUN yum install wget -y
 RUN wget -O splunk-7.1.9-45b25e1f9be3-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/7.1.9/linux/splunk-7.1.9-45b25e1f9be3-Linux-x86_64.tgz"
 RUN tar -xvzf splunk-7.1.9-45b25e1f9be3-Linux-x86_64.tgz
+RUN rm -rf splunk-7.1.9-45b25e1f9be3-Linux-x86_64.tgz
 
 # Expose port 3000 to the outside world
 EXPOSE 8000 8089
