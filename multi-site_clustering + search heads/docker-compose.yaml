@@ -15,7 +15,7 @@ services:
         /opt/splunk/bin/splunk login  -auth admin:splunk1234 &&
         /opt/splunk/bin/splunk set servername manager &&
         /opt/splunk/bin/splunk set default-hostname manager &&
-        /opt/splunk/bin//opt/splunk/bin/splunk edit cluster-config -mode manager -multisite true -available_sites site1,site2 -site site1 -site_replication_factor origin:2,site1:1,site2:2,total:4 -site_search_factor origin:2,total:3 &&
+        /opt/splunk/bin/splunk edit cluster-config -mode manager -multisite true -available_sites site1,site2 -site site1 -site_replication_factor origin:2,site1:1,site2:2,total:4 -site_search_factor origin:2,total:3 &&
         /opt/splunk/bin/splunk restart
          tail -f /dev/null
  
