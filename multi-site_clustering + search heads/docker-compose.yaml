@@ -27,7 +27,7 @@ services:
     depends_on:
       - manager
     command: 
-      - bash
+    
       - -c
       - |
         sleep 2m
