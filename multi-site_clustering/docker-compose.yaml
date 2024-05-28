@@ -89,7 +89,7 @@ services:
   peer4:
     image: mosesdayanand/splunk:9.2.0
     ports:
-      - "8004:8000"
+      - "8005:8000"
     depends_on:
       - manager 
       - peer1
@@ -113,7 +113,7 @@ services:
   peer5:
     image: mosesdayanand/splunk:9.2.0
     ports:
-      - "8004:8000"
+      - "8006:8000"
     depends_on:
       - manager 
       - peer1
@@ -138,7 +138,7 @@ services:
   peer6:
     image: mosesdayanand/splunk:9.2.0
     ports:
-      - "8004:8000"
+      - "8007:8000"
     depends_on:
       - manager 
       - peer1
@@ -163,7 +163,7 @@ services:
   sh1:
     image: mosesdayanand/splunk:9.2.0
     ports:
-      - "8004:8000"
+      - "8008:8000"
     depends_on:
       - manager 
       - peer1
@@ -188,7 +188,7 @@ services:
   sh2:
     image: mosesdayanand/splunk:9.2.0
     ports:
-      - "8004:8000"
+      - "8009:8000"
     depends_on:
       - manager 
       - peer1
