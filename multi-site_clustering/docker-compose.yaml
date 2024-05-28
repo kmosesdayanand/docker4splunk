@@ -1,1 +1,212 @@
+version: '3'
+services:
 
+  manager:
+    image: mosesdayanand/splunk:9.2.0
+    ports:
+      - "8001:8000"
+    command: 
+      - bash
+      - -c
+      - |
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start &&
+        /opt/splunk/bin/splunk login  -auth admin:splunk1234 &&
+        /opt/splunk/bin/splunk set servername manager &&
+        /opt/splunk/bin/splunk set default-hostname manager &&
+        /opt/splunk/bin//opt/splunk/bin/splunk edit cluster-config -mode manager -multisite true -available_sites site1,site2 -site site1 -site_replication_factor origin:2,site1:1,site2:2,total:4 -site_search_factor origin:2,total:3 &&
+        /opt/splunk/bin/splunk restart
+         tail -f /dev/null
+ 
+
+  peer1:
+    image: mosesdayanand/splunk:9.2.0
+    ports:
+      - "8002:8000"
+    depends_on:
+      - manager
+    command: 
+      - bash
+      - -c
+      - |
+        sleep 2m
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start &&
+        /opt/splunk/bin/splunk login  -auth admin:splunk1234 &&
+        /opt/splunk/bin/splunk set servername peer-1 &&
+        /opt/splunk/bin/splunk set default-hostname peer-1 &&
+        /opt/splunk/bin/splunk edit cluster-config -mode peer -site site1 -manager_uri https://manager:8089 -replication_port 9887 &&
+        /opt/splunk/bin/splunk restart
+        tail -f /dev/null
+
+  peer2:
+    image: mosesdayanand/splunk:9.2.0
+    ports:
+      - "8003:8000"
+    depends_on:
+      - manager
+      - peer1
+    command: 
+      - bash
+      - -c
+      - |
+        sleep 2m
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start &&
+        /opt/splunk/bin/splunk login  -auth admin:splunk1234 &&
+        /opt/splunk/bin/splunk set servername peer-2 &&
+        /opt/splunk/bin/splunk set default-hostname peer-2 &&
+        /opt/splunk/bin/splunk edit cluster-config -mode peer -site site1 -manager_uri https://manager:8089 -replication_port 9887 &&
+        /opt/splunk/bin/splunk restart
+        tail -f /dev/null
+
+  peer3:
+    image: mosesdayanand/splunk:9.2.0
+    ports:
+      - "8004:8000"
+    depends_on:
+      - manager 
+      - peer1
+      - peer2
+    command: 
+      - bash
+      - -c
+      - |
+        sleep 2m
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start &&
+        /opt/splunk/bin/splunk login  -auth admin:splunk1234 &&
+        /opt/splunk/bin/splunk set servername peer-3 &&
+        /opt/splunk/bin/splunk set default-hostname peer-3 &&
+        /opt/splunk/bin/splunk edit cluster-config -mode peer -site site1 -manager_uri https://manager:8089 -replication_port 9887 &&
+        /opt/splunk/bin/splunk restart
+        tail -f /dev/null
+
+  peer4:
+    image: mosesdayanand/splunk:9.2.0
+    ports:
+      - "8004:8000"
+    depends_on:
+      - manager 
+      - peer1
+      - peer2
+      - peer3
+    command: 
+      - bash
+      - -c
+      - |
+        sleep 2m
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start &&
+        /opt/splunk/bin/splunk login  -auth admin:splunk1234 &&
+        /opt/splunk/bin/splunk set servername peer-3 &&
+        /opt/splunk/bin/splunk set default-hostname peer-3 &&
+        /opt/splunk/bin/splunk edit cluster-config -mode peer -site site2 -manager_uri https://manager:8089 -replication_port 9887 &&
+        /opt/splunk/bin/splunk restart
+        tail -f /dev/null  
+
+  peer5:
+    image: mosesdayanand/splunk:9.2.0
+    ports:
+      - "8004:8000"
+    depends_on:
+      - manager 
+      - peer1
+      - peer2
+      - peer3
+      - peer4
+    command: 
+      - bash
+      - -c
+      - |
+        sleep 2m
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start &&
+        /opt/splunk/bin/splunk login  -auth admin:splunk1234 &&
+        /opt/splunk/bin/splunk set servername peer-3 &&
+        /opt/splunk/bin/splunk set default-hostname peer-3 &&
+        /opt/splunk/bin/splunk edit cluster-config -mode peer -site site2 -manager_uri https://manager:8089 -replication_port 9887 &&
+        /opt/splunk/bin/splunk restart
+        tail -f /dev/null    
+
+  peer6:
+    image: mosesdayanand/splunk:9.2.0
+    ports:
+      - "8004:8000"
+    depends_on:
+      - manager 
+      - peer1
+      - peer2
+      - peer3
+      - peer4
+      - peer5
+    command: 
+      - bash
+      - -c
+      - |
+        sleep 2m
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start &&
+        /opt/splunk/bin/splunk login  -auth admin:splunk1234 &&
+        /opt/splunk/bin/splunk set servername peer-3 &&
+        /opt/splunk/bin/splunk set default-hostname peer-3 &&
+        /opt/splunk/bin/splunk edit cluster-config -mode peer -site site2 -manager_uri https://manager:8089 -replication_port 9887 &&
+        /opt/splunk/bin/splunk restart
+        tail -f /dev/null                    
+  sh1:
+    image: mosesdayanand/splunk:9.2.0
+    ports:
+      - "8004:8000"
+    depends_on:
+      - manager 
+      - peer1
+      - peer2
+      - peer3
+      - peer4
+      - peer5
+    command: 
+      - bash
+      - -c
+      - |
+        sleep 2m
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start &&
+        /opt/splunk/bin/splunk login  -auth admin:splunk1234 &&
+        /opt/splunk/bin/splunk set servername peer-3 &&
+        /opt/splunk/bin/splunk set default-hostname peer-3 &&
+        /opt/splunk/bin/splunk edit cluster-config -mode searchhead -site site1 -manager_uri https://manager:8089 &&
+        /opt/splunk/bin/splunk restart
+        tail -f /dev/null  
+  sh2:
+    image: mosesdayanand/splunk:9.2.0
+    ports:
+      - "8004:8000"
+    depends_on:
+      - manager 
+      - peer1
+      - peer2
+      - peer3
+      - peer4
+      - peer5
+    command: 
+      - bash
+      - -c
+      - |
+        sleep 2m
+        echo "OPTIMISTIC_ABOUT_FILE_LOCKING = 1" >> /opt/splunk/etc/splunk-launch.conf &&
+        /opt/splunk/bin/splunk enable boot-start --accept-license --no-prompt --seed-passwd splunk1234 &&
+        /opt/splunk/bin/splunk start &&
+        /opt/splunk/bin/splunk login  -auth admin:splunk1234 &&
+        /opt/splunk/bin/splunk set servername peer-3 &&
+        /opt/splunk/bin/splunk set default-hostname peer-3 &&
+        /opt/splunk/bin/splunk edit cluster-config -mode searchhead -site site2 -manager_uri https://manager:8089 &&
+        /opt/splunk/bin/splunk restart
+        tail -f /dev/null
