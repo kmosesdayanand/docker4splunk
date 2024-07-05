@@ -11,3 +11,8 @@
 * Tutorial Data
 * Image Size
 * IPVLAN
+* NFS
+* Shopt
+* rsyslog
+* Host website
+  
