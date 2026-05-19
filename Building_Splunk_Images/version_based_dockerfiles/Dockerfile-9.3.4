@@ -1,0 +1,12 @@
+# Use Rocky Linux Minimal (lightweight, CentOS-like)
+FROM rockylinux:9-minimal
+# Set the working directory in the container
+WORKDIR /opt
+# Install dependencies (microdnf is faster/lighter than yum)
+RUN microdnf install wget tar gzip -y && microdnf clean all
+RUN wget -O splunk-9.3.4-30e72d3fb5f7-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.3.4/linux/splunk-9.3.4-30e72d3fb5f7-Linux-x86_64.tgz"
+RUN tar -xvzf splunk-9.3.4-30e72d3fb5f7-Linux-x86_64.tgz
+RUN rm -rf splunk-9.3.4-30e72d3fb5f7-Linux-x86_64.tgz
+  
+# Expose ports
+EXPOSE 8000 8089
